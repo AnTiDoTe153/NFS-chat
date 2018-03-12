@@ -98,7 +98,13 @@ int verifyUser(char *name,char *pass)
 
 int check_login(int their_sock){
 	char ans[200];
-	int result;
+	int result, i;
+
+	for(i = 0; i < n; i++){
+		if(strcmp(user_data.name, client[i].name) == 0){
+			return 0;
+		}
+	}
 
 	recv(their_sock,&user_data,sizeof(struct user),0);
 	if((result = verifyUser(user_data.name, user_data.pass))){
@@ -278,7 +284,7 @@ int main(int argc,char *argv[])
 			pthread_mutex_unlock(&mutex);
 			char msg[200];
 			strcpy(msg, user_data.name);
-			strcat(msg, " has connected.");
+			strcat(msg, " has connected.\n");
 			sendMessageToAll(msg, cl);
 			pthread_mutex_lock(&mutex);
 			pthread_create(&recvt,NULL,receiveMessage,&cl);
