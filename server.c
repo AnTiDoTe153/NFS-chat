@@ -229,12 +229,12 @@ int main(int argc,char *argv[])
 			clients[n].sockNumber = theirSocket;
 			strcpy(clients[n].name, user_data.name);
 			n++;
-
-			// char msg[200];
-			// strcpy(msg, user_data.name);
-			// strcat(msg, " has connected.");
-			// sendMessageToAll(msg, cl);
-
+			pthread_mutex_unlock(&mutex);
+			char msg[200];
+			strcpy(msg, user_data.name);
+			strcat(msg, " has connected.");
+			sendMessageToAll(msg, cl);
+			pthread_mutex_lock(&mutex);
 			pthread_create(&recvt,NULL,receiveMessage,&cl);
 		
 		}
