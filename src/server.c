@@ -30,7 +30,7 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void readUsers(char *fileName)
 {
-	FILE *f;
+    FILE *f;
     char *line =NULL;
     size_t len = 0;
     ssize_t read;
@@ -57,8 +57,9 @@ void readUsers(char *fileName)
         }
         nrOfUsers++;
 	}
-      
+      	
 	fclose(f);
+	printf("Users successfully fetched from database \n");
 }
 
 int verifyUser(char *name,char *pass)
@@ -193,6 +194,11 @@ int initializeSocket(char *portNumber)
 }
 int main(int argc,char *argv[])
 {
+	if(argc != 3) 
+	{
+		printf("Usage : %s  <PortNO> <UsersDB> \n",argv[0]);
+		exit(1);
+	}
 	struct sockaddr_in theirAddress;
 	socklen_t theirAddressSize = sizeof(theirAddress);
 	int mySocket,theirSocket;
@@ -201,14 +207,9 @@ int main(int argc,char *argv[])
 	struct clientInfo cl;
 	char ip[INET_ADDRSTRLEN];
 	pthread_t recvt;
-	if(argc != 3) 
-	{
-		printf("too many arguments");
-		exit(1);
-	}
-
+	
 	readUsers(argv[2]);
-
+        printf("Server is up \n");
 	while(1) 
 	{
 		if((theirSocket = accept(mySocket,(struct sockaddr *)&theirAddress,&theirAddressSize)) < 0)

@@ -72,9 +72,9 @@ int main(int argc, char *argv[])
 	int portno;
 	int c;
 	char ip[INET_ADDRSTRLEN];
-	if(argc > 3) 
+	if(argc != 3) 
 	{
-		printf("too many arguments");
+		printf("Usage : %s <portNo> <serverIp> \n",argv[0]);
 		exit(1);
 	}
 	portno = atoi(argv[1]);
