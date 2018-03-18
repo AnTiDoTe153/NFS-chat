@@ -10,10 +10,6 @@
 #include<string.h>
 #include<ctype.h>
 
-#define _GNU_SOURCE     /* To get defns of NI_MAXSERV and NI_MAXHOST */
-       #include <netdb.h>
-       #include <ifaddrs.h>
-       #include <linux/if_link.h>
 struct clientInfo 
 {
 	int sockNumber;
@@ -107,6 +103,16 @@ int check_login(int their_sock){
 	}
 
 	recv(their_sock,&user_data,sizeof(struct user),0);
+
+	int i;
+	for(i = 0; i < n; i++){
+		if(strcmp(user_data.name, clients[i].name) == 0){
+			strcpy(ans, "logged");
+			write(their_sock,ans,200);
+			return 0;
+		}
+	}
+
 	if((result = verifyUser(user_data.name, user_data.pass))){
 		strcpy(ans, "accepted");
 	}else{
@@ -204,43 +210,7 @@ int initializeSocket(char *portNumber)
 
 }
 
-void showServerDetails(){
 
- struct ifaddrs *ifaddr, *ifa;
-           int family, s, n;
-           char host[NI_MAXHOST];
-           if (getifaddrs(&ifaddr) == -1) {
-               perror("getifaddrs");
-               exit(EXIT_FAILURE);
-           }
-
-           /* Walk through linked list, maintaining head pointer so we
-              can free list later */
-
-           for (ifa = ifaddr, n = 0; ifa != NULL; ifa = ifa->ifa_next, n++) {
-               if (ifa->ifa_addr == NULL)
-                   continue;
-
-               family = ifa->ifa_addr->sa_family;
-               /* For an AF_INET* interface address, display the address */
-
-               if (family == AF_INET) {
-                   s = getnameinfo(ifa->ifa_addr,
-                           (family == AF_INET) ? sizeof(struct sockaddr_in) :
-                                                 sizeof(struct sockaddr_in6),
-                           host, NI_MAXHOST,
-                           NULL, 0, NI_NUMERICHOST);
-                   if (s != 0) {
-                       printf("getnameinfo() failed: %s\n", gai_strerror(s));
-                       exit(EXIT_FAILURE);
-                   }
-		   if(strstr(host,"127") ==0)
-                   printf("address: <%s>\n", host);
-               }
-           }
-
-           freeifaddrs(ifaddr);
-}
 
 int main(int argc,char *argv[])
 {
@@ -260,7 +230,6 @@ int main(int argc,char *argv[])
 	
 	readUsers(argv[2]);
         printf("Server is up \n");
-	showServerDetails();
 	while(1) 
 	{
 		if((theirSocket = accept(mySocket,(struct sockaddr *)&theirAddress,&theirAddressSize)) < 0)

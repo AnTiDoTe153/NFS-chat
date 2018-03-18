@@ -62,6 +62,8 @@ int login(int my_sock)
 	recv(my_sock,answer,200,0);
 	if (strcmp(answer,"accepted")==0)
 		return 1;
+	else if (strcmp(answer, "logged") == 0)
+		return 2;
 	else
 		return 0;
 }
@@ -96,14 +98,18 @@ int main(int argc, char *argv[])
 
 	inet_ntop(AF_INET, (struct sockaddr *)&their_addr, ip, INET_ADDRSTRLEN);
 
-	if(login(my_sock))
+	int status = login(my_sock);
+
+	if(status == 1)
 	{
 		printf("connected to %s, start chatting\n",ip);
 		chat(my_sock);
 	}
-	else
+	else if(status == 0)
 	{
 		printf("Wrong username or password!\n");
+	}else{
+		printf("User is already logged in!\n");
 	}
 	close(my_sock);
 }
