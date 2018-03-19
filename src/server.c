@@ -97,14 +97,13 @@ int check_login(int their_sock){
 	int result, i;
 
 	for(i = 0; i < n; i++){
-		if(strcmp(user_data.name, client[i].name) == 0){
+		if(strcmp(user_data.name, clients[i].name) == 0){
 			return 0;
 		}
 	}
 
 	recv(their_sock,&user_data,sizeof(struct user),0);
 
-	int i;
 	for(i = 0; i < n; i++){
 		if(strcmp(user_data.name, clients[i].name) == 0){
 			strcpy(ans, "logged");
